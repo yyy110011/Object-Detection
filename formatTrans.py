@@ -29,14 +29,18 @@ class formatTrans():
             tag2obj[t] = tag2obj[t]['i']
 
         i = 0
-        NAME = data["ImageID"].unique()
-
+        NAME = np.array(os.listdir(self.data_addr))#data["ImageID"].unique()
+        data = data.groupby('ImageID')
         for pic_name in NAME:
-            pic_addr = self.data_addr + '/' +  pic_name + '.jpg'
+            pic_ID = pic_name[:-4]
+            t1 = time.time()
+            pic_addr = self.data_addr + '/' +  pic_name
             out_string += pic_addr + ' ' 
         # for each labeled box
-            object_data = data.loc[data["ImageID"] == pic_name,:]
+            object_data = data.get_group(pic_ID)
+            t1_1 = time.time()
             object_data = np.array(object_data)
+            t2 = time.time()
             #with Image.open(pic_addr) as pic:
             #        height, width = pic.size
             for j in range(len(object_data)):
@@ -49,6 +53,9 @@ class formatTrans():
                 
                 out_string += box_string
             out_string += '\n'
+            t3 = time.time()
+            #print('after loc :'+ str(t1_1 - t1) + 'after np array:' + str(t2 - t1_1) + '  after box loop:' + str(t3 - t2))
+
             if i % 100 ==0:
                 print(str(i) + ' of the file is finished')
             i += 1
