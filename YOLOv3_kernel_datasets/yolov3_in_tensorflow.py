@@ -19,7 +19,7 @@ _MODEL_SIZE = (416, 416)
 
 
 
-img_names = ['./dog.jpg', './office.jpg']
+img_names = ['../train_0/0a0a5cb609c10f09.jpg', '../train_0/0a0a9aa6b11175e8.jpg']
 #for img in img_names: display(Image.open(img))
     
     

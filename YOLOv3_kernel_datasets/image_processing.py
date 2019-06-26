@@ -94,3 +94,4 @@ def draw_boxes(img_names, boxes_dicts, class_names, model_size):
         img.save(img_name[:-5] + '_result.jpg')
         for im in boxes_dicts:
             print(im)
+        print(class_names)
