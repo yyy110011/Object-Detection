@@ -7,16 +7,19 @@ import numpy as np
 
 class formatTrans():
     
-    def __init__(self, data_addr, data_box_addr, class_descriptions_addr, output_addr):
+    def __init__(self, data_addr, data_box_addr, class_descriptions_addr, trainset_addr, testset_addr):
         self.data_addr = data_addr
         self.data_box_addr = data_box_addr
         self.class_descriptions_addr = class_descriptions_addr
-        self.output_addr = output_addr
+        self.trainset_addr = trainset_addr
+        self.testset_addr = testset_addr
 
     def run(self):
 
-        output = open(self.output_addr, 'w')
+        train_output = open(self.trainset_addr, 'w')
+        test_output = open(self.testset_addr, 'w')
         out_string = ''
+        
         data = pd.read_csv(self.data_box_addr)
         
         # tag & index match
@@ -30,9 +33,11 @@ class formatTrans():
 
         i = 0
         NAME = np.array(os.listdir(self.data_addr))#data["ImageID"].unique()
+        mask = np.random.uniform(0, 1, len(NAME))
+
         data = data.groupby('ImageID')
         T1 = time.time()
-        for pic_name in NAME:
+        for index, pic_name in enumerate(NAME):
             pic_ID = pic_name[:-4]
             #t1 = time.time()
             pic_addr = self.data_addr + '/' +  pic_name
@@ -59,7 +64,10 @@ class formatTrans():
                 
                 out_string += box_string
             out_string += '\n'
-            output.write(out_string)
+            if mask[index] > .95:
+                test_output.write(out_string)
+            else:
+                train_output.write(out_string)
             out_string = ''
             #t3 = time.time()
             #print('after loc :'+ str(t1_1 - t1) + 'after np array:' + str(t2 - t1_1) + '  after box loop:' + str(t3 - t2))
@@ -72,8 +80,9 @@ class formatTrans():
         
         T2 = time.time()
         print("Time cose: " + str(T2 - T1))
-        output.close()
-
+        train_output.close()
+        test_output.close()
+        
     def out_class(self):
         out = ''
         out_addr_ptr = open('./class.txt', 'w')
@@ -89,7 +98,8 @@ if __name__ == "__main__":
                    'train-annotations-bbox.csv',
                    'class-descriptions-boxable.csv',
                    #'/media/yyy/D4EC13B5EC13913A/DLProj/KaggleCompetition/transformed.txt')
-                   'transformed.txt')
+                   'train_0.txt',
+                   'test_0.txt')
     if 1:
         trans.run()
     if 0:
